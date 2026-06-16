@@ -256,4 +256,58 @@ router.post("/telegram/accounts/:phone/verify-email", async (req, res) => {
   }
 });
 
+router.post("/telegram/accounts/:phone/send-message", async (req, res) => {
+  const phone = decodeURIComponent(req.params.phone);
+  const { username, message } = req.body;
+  if (!username || !message) return res.status(400).json({ error: "username and message required" });
+  let client;
+  try {
+    client = await getAccountClient(phone);
+    await client.sendText(username, message);
+    res.json({ success: true, message: "Message sent" });
+  } catch (e: any) {
+    req.log.error({ err: e }, "send-message error");
+    res.status(500).json({ error: e.message });
+  } finally {
+    if (client) await client.close().catch(() => {});
+  }
+});
+
+router.post("/telegram/accounts/:phone/join-channel", async (req, res) => {
+  const phone = decodeURIComponent(req.params.phone);
+  const { channel } = req.body;
+  if (!channel) return res.status(400).json({ error: "channel required" });
+  let client;
+  try {
+    client = await getAccountClient(phone);
+    await client.joinChat(channel);
+    res.json({ success: true, message: `Joined ${channel}` });
+  } catch (e: any) {
+    req.log.error({ err: e }, "join-channel error");
+    res.status(500).json({ error: e.message });
+  } finally {
+    if (client) await client.close().catch(() => {});
+  }
+});
+
+router.post("/telegram/join-all", async (req, res) => {
+  const { channel } = req.body;
+  if (!channel) return res.status(400).json({ error: "channel required" });
+  const accounts = await getAllAccounts();
+  const results: Array<{ phone: string; success: boolean; error?: string }> = [];
+  for (const acc of accounts) {
+    let client;
+    try {
+      client = await getAccountClient(acc.phone);
+      await client.joinChat(channel);
+      results.push({ phone: acc.phone, success: true });
+    } catch (e: any) {
+      results.push({ phone: acc.phone, success: false, error: e.message });
+    } finally {
+      if (client) await client.close().catch(() => {});
+    }
+  }
+  res.json({ results });
+});
+
 export default router;
