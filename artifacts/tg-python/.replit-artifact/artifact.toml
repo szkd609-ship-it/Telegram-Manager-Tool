@@ -1,0 +1,11 @@
+schemaVersion = 1
+
+[artifact]
+id = "artifacts/tg-python"
+title = "Telegram Manager"
+previewPath = "/"
+
+[[services]]
+name = "web"
+localPort = 5000
+paths = ["/"]
