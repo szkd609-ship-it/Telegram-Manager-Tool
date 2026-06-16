@@ -51,7 +51,7 @@ export async function sendCode(phone: string): Promise<{ phoneCodeHash: string; 
     set: { phoneCodeHash: result.phoneCodeHash, sessionData: storagePath },
   });
 
-  await client.close();
+  await client.disconnect();
   return { phoneCodeHash: result.phoneCodeHash, sessionId };
 }
 
@@ -76,12 +76,12 @@ export async function signIn(
     const msg = e?.message ?? "";
     if (msg.includes("SESSION_PASSWORD_NEEDED") || msg.includes("2FA")) {
       if (!password) {
-        await client.close();
+        await client.disconnect();
         throw new Error("2FA_REQUIRED");
       }
       user = await client.checkPassword(password);
     } else {
-      await client.close();
+      await client.disconnect();
       throw e;
     }
   }
@@ -121,7 +121,7 @@ export async function signIn(
   });
 
   await db.delete(pendingSessionsTable).where(eq(pendingSessionsTable.sessionId, sessionId));
-  await client.close();
+  await client.disconnect();
 
   return {
     id: user.id.toString(),

@@ -123,7 +123,7 @@ router.post("/telegram/accounts/:phone/disable-2fa", async (req, res) => {
     req.log.error({ err: e }, "disable-2fa error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -156,7 +156,7 @@ router.get("/telegram/accounts/:phone/login-code", async (req, res) => {
     req.log.error({ err: e }, "get-login-code error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -183,7 +183,7 @@ router.get("/telegram/accounts/:phone/sessions", async (req, res) => {
     req.log.error({ err: e }, "get-sessions error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -201,7 +201,7 @@ router.post("/telegram/accounts/:phone/terminate-session", async (req, res) => {
     req.log.error({ err: e }, "terminate-session error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -216,7 +216,7 @@ router.post("/telegram/accounts/:phone/terminate-all-sessions", async (req, res)
     req.log.error({ err: e }, "terminate-all-sessions error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -234,7 +234,7 @@ router.post("/telegram/accounts/:phone/change-email", async (req, res) => {
     req.log.error({ err: e }, "change-email error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -252,7 +252,7 @@ router.post("/telegram/accounts/:phone/verify-email", async (req, res) => {
     req.log.error({ err: e }, "verify-email error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -269,7 +269,7 @@ router.post("/telegram/accounts/:phone/send-message", async (req, res) => {
     req.log.error({ err: e }, "send-message error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -286,7 +286,7 @@ router.post("/telegram/accounts/:phone/join-channel", async (req, res) => {
     req.log.error({ err: e }, "join-channel error");
     res.status(500).json({ error: e.message });
   } finally {
-    if (client) await client.close().catch(() => {});
+    if (client) await client.disconnect().catch(() => {});
   }
 });
 
@@ -304,7 +304,7 @@ router.post("/telegram/join-all", async (req, res) => {
     } catch (e: any) {
       results.push({ phone: acc.phone, success: false, error: e.message });
     } finally {
-      if (client) await client.close().catch(() => {});
+      if (client) await client.disconnect().catch(() => {});
     }
   }
   res.json({ results });
