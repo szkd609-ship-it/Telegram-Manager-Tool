@@ -20,6 +20,10 @@ from telethon.tl.functions.account import (
 )
 from telethon.tl.functions.auth import ResetAuthorizationsRequest
 from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl.types import (
+    EmailVerifyPurposeLoginChange, EmailVerifyPurposeLoginSetup,
+    EmailVerificationCode,
+)
 
 API_ID = 32140582
 API_HASH = "e9597b6e5e64a9d093071e20d0545f3f"
@@ -397,7 +401,17 @@ async def change_email(phone: str, body: EmailBody):
     client = make_client(session_name(phone))
     try:
         await client.connect()
-        await client(SendVerifyEmailCodeRequest(email=body.email))
+        # Try LoginChange first (for existing login email), fall back to LoginSetup
+        try:
+            await client(SendVerifyEmailCodeRequest(
+                purpose=EmailVerifyPurposeLoginChange(),
+                email=body.email
+            ))
+        except Exception:
+            await client(SendVerifyEmailCodeRequest(
+                purpose=EmailVerifyPurposeLoginSetup(),
+                email=body.email
+            ))
         return {"success": True, "message": "Verification code sent to email"}
     except Exception as e:
         raise HTTPException(500, str(e))
@@ -413,7 +427,16 @@ async def verify_email(phone: str, body: VerifyEmailBody):
     client = make_client(session_name(phone))
     try:
         await client.connect()
-        await client(VerifyEmailRequest(email=body.email, code=body.code))
+        try:
+            await client(VerifyEmailRequest(
+                purpose=EmailVerifyPurposeLoginChange(),
+                verification=EmailVerificationCode(code=body.code)
+            ))
+        except Exception:
+            await client(VerifyEmailRequest(
+                purpose=EmailVerifyPurposeLoginSetup(),
+                verification=EmailVerificationCode(code=body.code)
+            ))
         return {"success": True, "message": "Email changed successfully"}
     except Exception as e:
         raise HTTPException(500, str(e))
