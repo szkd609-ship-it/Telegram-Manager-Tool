@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["python312"]
+nixPkgs = ["python312", "python312Packages.pip"]
 
 [phases.install]
-cmds = ["pip install -r artifacts/tg-python/requirements.txt"]
+cmds = ["python3 -m pip install -r artifacts/tg-python/requirements.txt"]
 
 [start]
-cmd = "cd artifacts/tg-python && python server.py"
+cmd = "cd artifacts/tg-python && python3 server.py"
