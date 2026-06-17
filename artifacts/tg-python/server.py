@@ -234,6 +234,17 @@ async def list_accounts():
 async def remove_account(phone: str):
     from urllib.parse import unquote
     phone = unquote(phone)
+    # Properly log out from Telegram servers first (removes the session from all devices)
+    client = make_client(session_name(phone))
+    try:
+        await client.connect()
+        await client.log_out()  # This terminates the session on Telegram's servers
+    except Exception:
+        pass  # Even if logout fails, still delete locally
+    finally:
+        try: await client.disconnect()
+        except: pass
+    # Now delete local session files and DB entry
     for f in glob.glob(session_name(phone) + "*"):
         try: os.remove(f)
         except: pass
