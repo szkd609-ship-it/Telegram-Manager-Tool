@@ -1,8 +1,2 @@
 [build]
-builder = "nixpacks"
-buildCommand = "pip install -r artifacts/tg-python/requirements.txt"
-
-[deploy]
-startCommand = "cd artifacts/tg-python && python server.py"
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 3
+builder = "dockerfile"
